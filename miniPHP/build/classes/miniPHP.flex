@@ -1,3 +1,7 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 class Yytoken {
     Yytoken (int numToken,String token, String tipo, int linea, int columna){
         //Contador para el número de tokens reconocidos
@@ -24,6 +28,25 @@ class Yytoken {
     }
 }
 %%
+%{
+public Boolean bandera = true;
+public File archivoSalida;
+public File archivoError;
+private RandomAccessFile raf;
+private RandomAccessFile rafi; 
+public void Abrir() throws FileNotFoundException{
+    raf = new RandomAccessFile(archivoSalida,"rw");
+}
+public void AbrirError() throws FileNotFoundException{
+    rafi = new RandomAccessFile(archivoError,"rw");
+}
+public void Cerrar() throws IOException{
+    raf.close();
+}
+public void CerrarError() throws IOException{
+    rafi.close();
+}
+%}
 %function nextToken
 %line
 %column
@@ -188,45 +211,52 @@ Identificador = [a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*
 //salto de linea
 EXP_ESPACIO = \n|\r\n|" "|\r|\t|\s
 %%
-{PalabrasReservadas} { 
-    Cola.add(yytext());
-    System.out.println ("Se leyo una palabra reservada"+ yyline);}
+{PalabrasReservadas} {
+    try{raf.writeBytes(yytext());} catch(IOException ex){}
+    System.out.println ("Se leyo una palabra reservada "+ yyline);}
 {ConstanteCompilacion} { 
-    Cola.add(yytext());
-    System.out.println ("Se leyo una constante en tiempo de compilacion"+ yyline);}
+    try{raf.writeBytes(yytext());} catch(IOException ex){} 
+    System.out.println ("Se leyo una constante en tiempo de compilacion "+ yyline);}
 {etiqueta} {
-    Cola.add(yytext());
-    System.out.println("Se leyo una etiqueta de php"+ yyline);}
+    try{raf.writeBytes(yytext());} catch(IOException ex){} 
+    System.out.println("Se leyo una etiqueta de php "+ yyline);}
 {variablesPredeterminadas} {
-    Cola.add(yytext());
-    System.out.println("Se leyo una variable predeterminada"+ yyline);}
+    try{raf.writeBytes(yytext());} catch(IOException ex){} 
+    System.out.println("Se leyo una variable predeterminada "+ yyline);}
 {Operador} {
-    Cola.add(yytext());
-    System.out.println("Se leyo un Operador"+ yyline);}
+    try{raf.writeBytes(yytext());} catch(IOException ex){} 
+    System.out.println("Se leyo un Operador "+ yyline);}
 {Comentario} {
-    Cola.add(yytext());
-    System.out.println("Se leyo un comentario"+ yyline);}
+    try{raf.writeBytes(yytext());} catch(IOException ex){} 
+    System.out.println("Se leyo un comentario "+ yyline);}
 {TipoDato} {
-    Cola.add(yytext());
-    System.out.println("Se leyo un tipo de dato"+ yyline);}
+    try{raf.writeBytes(yytext());} catch(IOException ex){} 
+    System.out.println("Se leyo un tipo de dato "+ yyline);}
 {Control} {
-    Cola.add(yytext());
-    System.out.println("Se leyo una estructura de control"+ yyline);}
+    try{raf.writeBytes(yytext());} catch(IOException ex){} 
+    System.out.println("Se leyo una estructura de control "+ yyline);}
 {Caracter} {
-    Cola.add(yytext());
-    System.out.println("Se leyo un caracter"+ yyline);}
+    try{raf.writeBytes(yytext());} catch(IOException ex){} 
+    System.out.println("Se leyo un caracter "+ yyline);}
 {AccesoBD} {
-    Cola.add(yytext());
-    System.out.println("Se leyo un acceso a base de datos"+ yyline);}
+    try{raf.writeBytes(yytext());} catch(IOException ex){} 
+    System.out.println("Se leyo un acceso a base de datos "+ yyline);}
 {Variables} {
-    Cola.add(yytext());
-    System.out.println("Se leyo una variable"+ yyline);}
+    try{raf.writeBytes(yytext());} catch(IOException ex){} 
+    System.out.println("Se leyo una variable "+ yyline);}
 {Constante} {
-    Cola.add(yytext());
-    System.out.println("Se leyo una constante"+ yyline);}
+    try{raf.writeBytes(yytext());} catch(IOException ex){} 
+    System.out.println("Se leyo una constante "+ yyline);}
 {Identificador} {
-    Cola.add(yytext());
-    System.out.println("Se leyo un identificador"+ yyline);}
+    try{raf.writeBytes(yytext());} catch(IOException ex){} 
+    System.out.println("Se leyo un identificador "+ yyline);}
 {EXP_ESPACIO} {
-    Cola.add(yytext());
-    System.out.println("Se leyo un espacio"+ yyline);}
+    try{raf.writeBytes(yytext());} catch(IOException ex){} 
+    System.out.println("Se leyo un espacio "+ yyline);}
+    //ERRORES
+. {
+    bandera = false;
+    try{rafi.writeBytes("Se encontro un error en la linea: "+ Integer.toString(yyline));} catch(IOException ex){}
+    System.out.println("Se leyo un error "+ yyline);
+}
+

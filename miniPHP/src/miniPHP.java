@@ -31,23 +31,35 @@ public class miniPHP extends javax.swing.JFrame {
     }
     //Variables
     Yylex objYylex;
-    String Ruta;
-    Boolean bandera;
+    String ruta = "";
     //Cargar archivo PHP
-    private void cargarPHP(Component a) throws FileNotFoundException, IOException
+    public void cargarPHP(Component a) throws FileNotFoundException, IOException
     {
      JFileChooser dialog = new JFileChooser();
      FileNameExtensionFilter filter = new FileNameExtensionFilter("archivos php", "php");
      dialog.setFileFilter(filter);
      if(dialog.showOpenDialog(a) == JFileChooser.APPROVE_OPTION)
-     {
+     {       
          try{
              File selectedFile = dialog.getSelectedFile();
-             Ruta = selectedFile.getPath();
-             FileReader objFileReader = new FileReader(Ruta);
-             BufferedReader objBufferedReader = new BufferedReader(objFileReader);
+             FileReader objFileReader = new FileReader(selectedFile.getPath());
+             BufferedReader objBufferedReader = new BufferedReader(objFileReader); 
              objYylex = new Yylex(objFileReader);
+             ruta = selectedFile.getPath();
+             ruta = ruta.substring(0,ruta.length()-3); 
+             objYylex.archivoSalida = new File(ruta + "out");
+             objYylex.archivoError = new File(ruta + "err");
+             objYylex.Abrir();
+             objYylex.AbrirError();
              objYylex.nextToken();
+             objYylex.Cerrar();
+             objYylex.CerrarError();
+             if(objYylex.bandera){
+                 selectedFile = new File(ruta+"err");
+             }else{
+                 selectedFile = new File(ruta+"out");
+             }
+             selectedFile.delete();
          }catch(NumberFormatException e){}
      }
     }
@@ -63,21 +75,6 @@ public class miniPHP extends javax.swing.JFrame {
          jflex.Main.main(new String[] {selectedFile.getPath()});
      }
     }
-    private void archivoSalida(Component a) throws FileNotFoundException, IOException{
-        Ruta = Ruta.substring(0,Ruta.length()-3);
-        File salida = new File(Ruta + "out");
-        RandomAccessFile raf = new RandomAccessFile(salida,"rw");
-        bandera = Boolean.parseBoolean(objYylex.Cola.poll().toString());
-        int contador = objYylex.Cola.size();
-        if(bandera){
-            for (int i = 0; i < contador; i++) {
-               raf.writeBytes(objYylex.Cola.poll().toString());
-            }
-        }else{
-            raf.writeBytes("Se encontró un error en la linea " + objYylex.Cola.poll().toString());
-        }
-        raf.close();
-    }
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -90,7 +87,6 @@ public class miniPHP extends javax.swing.JFrame {
 
         jbtnFlex = new javax.swing.JButton();
         jbtnPHP = new javax.swing.JButton();
-        jbtnGo = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -101,17 +97,10 @@ public class miniPHP extends javax.swing.JFrame {
             }
         });
 
-        jbtnPHP.setText("jPHP");
+        jbtnPHP.setText("php");
         jbtnPHP.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jbtnPHPActionPerformed(evt);
-            }
-        });
-
-        jbtnGo.setText("jButton1");
-        jbtnGo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbtnGoActionPerformed(evt);
             }
         });
 
@@ -122,10 +111,9 @@ public class miniPHP extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(22, 22, 22)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jbtnGo)
-                    .addComponent(jbtnPHP)
+                    .addComponent(jbtnPHP, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jbtnFlex))
-                .addContainerGap(305, Short.MAX_VALUE))
+                .addContainerGap(288, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -133,10 +121,8 @@ public class miniPHP extends javax.swing.JFrame {
                 .addGap(27, 27, 27)
                 .addComponent(jbtnFlex)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jbtnPHP)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jbtnGo)
-                .addContainerGap(192, Short.MAX_VALUE))
+                .addComponent(jbtnPHP, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(98, Short.MAX_VALUE))
         );
 
         pack();
@@ -155,15 +141,6 @@ public class miniPHP extends javax.swing.JFrame {
         // TODO add your handling code here:
         cargarJFLEX(this);
     }//GEN-LAST:event_jbtnFlexActionPerformed
-
-    private void jbtnGoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnGoActionPerformed
-        try {
-            // TODO add your handling code here:
-            archivoSalida(this);
-        } catch (IOException ex) {
-            Logger.getLogger(miniPHP.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }//GEN-LAST:event_jbtnGoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -202,7 +179,6 @@ public class miniPHP extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jbtnFlex;
-    private javax.swing.JButton jbtnGo;
     private javax.swing.JButton jbtnPHP;
     // End of variables declaration//GEN-END:variables
 }
