@@ -24,6 +24,7 @@ class Yytoken {
     }
 }
 %%
+%function nextToken
 %line
 %column
 %ignorecase
@@ -58,13 +59,13 @@ z = [zZ]
 __halt_compiler= ("__halt_compiler")
 break = ("break")
 clone = ("clone")
-die = ("die()")
-empty = ("empty()")
+die = ("die")
+empty = ("empty")
 endswitch = ("endswitch")
 final = ("final")
 global = ("global")
 include_once = ("include_once")
-list = ("list()")
+list = ("list")
 private = ("private")
 return = ("return")
 try = ("try")
@@ -83,7 +84,7 @@ instanceof = ("instanceof")
 namespace = ("namespace")
 protected = ("protected")
 static = ("static")
-unset = ("unset()")
+unset = ("unset")
 yield = ("yield")
 __DIR__ = ("__DIR__")
 __TRAIT__ = ("__TRAIT__")
@@ -92,7 +93,7 @@ case = ("case")
 continue = ("continue")
 echo = ("echo")
 endfor = ("endfor")
-eval = ("eval()")
+eval = ("eval")
 for = ("for")
 if = ("if")
 insteadof = ("insteadof")
@@ -100,12 +101,12 @@ new = ("new")
 public = ("public")
 switch = ("switch")
 use = ("use")
-array = ("array()")
+array = ("array")
 catch = ("catch")
 declare = ("declare")
 else = ("else")
 endforeach = ("endforeach")
-exit = ("exit()")
+exit = ("exit")
 foreach = ("foreach")
 implements = ("implements")
 interface = ("interface")
@@ -117,7 +118,7 @@ while = ("while")
 trait = ("trait")
 require_once = ("require_once")
 print = ("print")
-isset = ("isset()")
+isset = ("isset")
 include = ("include")
 function = ("function")
 extends = ("extends")
@@ -142,17 +143,90 @@ DNUM = ([0-9]*[\.]{LNUM}) | ({LNUM}[\.][0-9]*)
 EXPONENT_DNUM = [+-]?(({LNUM} | {DNUM}) [eE][+-]? {LNUM})
 double = {LNUM}|{DNUM}|{EXPONENT_DNUM}
 boolean = {t}{r}{u}{e}|{f}{a}{l}{s}{e}
-string = '[^']'|\" [^\"]\"
-//Operadores lógicos
+string = '([^'\n]|\\')*'|\"([^\"\n]|\\\")*\"
+//Operadores
 And = {a}{n}{d}|"&&"
 Or = {o}{r}|"||"
 Xor = {x}{o}{r}
 Not = "!"
+operadoreslogicos = {And}|{Or}|{Xor}|{Not}
+operadoresAritmeticos = "+"|"-"|"/"|"*"|"**"
+operadoresComparativo = "=="|"==="|"!="|"<>"|"!=="|"<"|">"|"<="|">="|"<=>"|"??"
+operadoresAsignacion = "="|"+="|"-="|"*="|"/="|"++"|"--" 
+//Caracteres
+Punto = "."
+Coma = ","
+PuntoyComa =";"
+Parentesis = "("|")"
+Llaves = "{"|"}"
+Corchetes = "["|"]"
+BarraInvertida = \
+//Comentarios
+ComentarioSimple = ("//"|"#")(.)*
+ComentarioMultiple = "/*"([^*/])*"*/"
+//Variables predeterminadas
+Predeterminado = "$"(GLOBALS|_(SERVER|GET|POST|FILES|COOKIE|SESSION|REQUEST|ENV))
+MasPredeterminado = "$"(php_errormsg|HTTP_RAW_POST_DATA|http_response_header|argc|argv|args)
+//Entidades que devolverán un texto
+variablesPredeterminadas = {Predeterminado}|{MasPredeterminado}
+Operador = {operadoreslogicos}|{operadoresAritmeticos}|{operadoresComparativo}|{operadoresAsignacion}
+Comentario = {ComentarioSimple}|{ComentarioMultiple}
 TipoDato = {integer}|{double}|{boolean}|{string}
 ConstanteCompilacion = {__CLASS__}|{__DIR__}|{__FILE__}|{__FUNCTION__}|{__LINE__}|{__METHOD__}|{__NAMESPACE__}|{__TRAIT__}
 PalabrasReservadas = {abstract}|{and}|{array}|{as}|{break}|{callable}|{case}|{catch}|{class}|{clone}|{const}|{continue}|{declare}|{default}|{die}|{do}|{echo}|{else}|{elseif}|{empty}|{enddeclare}|{endfor}|{endforeach}|{endif}|{endswitch}|{endwhile}|{eval}|{exit}|{extends}|{final}|{finally}|{for}|{foreach}|{function}|{global}|{goto}|{__halt_compiler}|{if}|{implements}|{include}|{include_once}|{instanceof}|{insteadof}|{interface}|{isset}|{list}|{namespace}|{new}|{or}|{print}|{private}|{protected}|{public}|{require}|{require_once}|{return}|{static}|{switch}|{throw}|{trait}|{try}|{unset}|{use}|{var}|{while}|{xor}|{yield}
+Caracter = {Punto}|{Coma}|{PuntoyComa}|{Parentesis}|{Llaves}|{Corchetes}|{BarraInvertida}
+//Acceso a base de datos
+AccesoBD = "$"recordset"["{string}"]"
+//Estructuras de control
+Control = ({if}|{else}|{elseif}|{endif}|{while}|{do}|{for}|{foreach}|{break}|{switch}|{case}|{continue}|{return}|{include})
+//Variables
+Variables = "$"{Identificador}
+//Constantes
+Constante = {Identificador}
+//Identificador
+Identificador = [a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*
+//salto de linea
+EXP_ESPACIO = \n|\r\n|" "|\r
 %%
-{PalabrasReservadas} { System.out.println ("Se leyo una palabra reservada");}
-{ConstanteCompilacion} { System.out.println ("Se leyo una constante en tiempo de compilacion");}
-{etiqueta} {System.out.println("Se leyo una etiqueta de php")}
-
+{PalabrasReservadas} { 
+    Cola.add(yytext());
+    System.out.println ("Se leyo una palabra reservada"+ yyline);}
+{ConstanteCompilacion} { 
+    Cola.add(yytext());
+    System.out.println ("Se leyo una constante en tiempo de compilacion"+ yyline);}
+{etiqueta} {
+    Cola.add(yytext());
+    System.out.println("Se leyo una etiqueta de php"+ yyline);}
+{variablesPredeterminadas} {
+    Cola.add(yytext());
+    System.out.println("Se leyo una variable predeterminada"+ yyline);}
+{Operador} {
+    Cola.add(yytext());
+    System.out.println("Se leyo un Operador"+ yyline);}
+{Comentario} {
+    Cola.add(yytext());
+    System.out.println("Se leyo un comentario"+ yyline);}
+{TipoDato} {
+    Cola.add(yytext());
+    System.out.println("Se leyo un tipo de dato"+ yyline);}
+{Control} {
+    Cola.add(yytext());
+    System.out.println("Se leyo una estructura de control"+ yyline);}
+{Caracter} {
+    Cola.add(yytext());
+    System.out.println("Se leyo un caracter"+ yyline);}
+{AccesoBD} {
+    Cola.add(yytext());
+    System.out.println("Se leyo un acceso a base de datos"+ yyline);}
+{Variables} {
+    Cola.add(yytext());
+    System.out.println("Se leyo una variable"+ yyline);}
+{Constante} {
+    Cola.add(yytext());
+    System.out.println("Se leyo una constante"+ yyline);}
+{Identificador} {
+    Cola.add(yytext());
+    System.out.println("Se leyo un identificador"+ yyline);}
+{EXP_ESPACIO} {
+    Cola.add(yytext());
+    System.out.println("Se leyo un espacio"+ yyline);}

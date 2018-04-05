@@ -1,6 +1,13 @@
 
 import java.awt.Component;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -22,16 +29,26 @@ public class miniPHP extends javax.swing.JFrame {
     public miniPHP() {
         initComponents();
     }
+    //Variables
+    Yylex objYylex;
+    String Ruta;
+    Boolean bandera;
     //Cargar archivo PHP
-    private void cargarPHP(Component a)
+    private void cargarPHP(Component a) throws FileNotFoundException, IOException
     {
      JFileChooser dialog = new JFileChooser();
      FileNameExtensionFilter filter = new FileNameExtensionFilter("archivos php", "php");
      dialog.setFileFilter(filter);
      if(dialog.showOpenDialog(a) == JFileChooser.APPROVE_OPTION)
      {
-         File selectedFile = dialog.getSelectedFile();
-         //Realizar acción.
+         try{
+             File selectedFile = dialog.getSelectedFile();
+             Ruta = selectedFile.getPath();
+             FileReader objFileReader = new FileReader(Ruta);
+             BufferedReader objBufferedReader = new BufferedReader(objFileReader);
+             objYylex = new Yylex(objFileReader);
+             objYylex.nextToken();
+         }catch(NumberFormatException e){}
      }
     }
     //Cargar un archivo JFlex
@@ -44,8 +61,21 @@ public class miniPHP extends javax.swing.JFrame {
      {
          File selectedFile = dialog.getSelectedFile();
          jflex.Main.main(new String[] {selectedFile.getPath()});
-         //Realizar acción.
      }
+    }
+    private void archivoSalida(Component a) throws FileNotFoundException, IOException{
+        Ruta = Ruta.substring(0,Ruta.length()-3);
+        File salida = new File(Ruta + "out");
+        RandomAccessFile raf = new RandomAccessFile(salida,"rw");
+        bandera = Boolean.parseBoolean(objYylex.Cola.poll().toString());
+        if(bandera){
+            for (int i = 0; i < objYylex.Cola.size(); i++) {
+                raf.writeBytes(objYylex.Cola.poll().toString());
+            }
+        }else{
+            raf.writeBytes("Se encontró un error en la linea" + objYylex.Cola.poll().toString());
+        }
+        raf.close();
     }
     
     /**
@@ -78,6 +108,11 @@ public class miniPHP extends javax.swing.JFrame {
         });
 
         jbtnGo.setText("jButton1");
+        jbtnGo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbtnGoActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -107,14 +142,27 @@ public class miniPHP extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jbtnPHPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnPHPActionPerformed
-        // Cargar el archivo PHP
-        cargarPHP(this);
+        try {
+            cargarPHP(this);
+        } catch (IOException ex) {
+            Logger.getLogger(miniPHP.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }//GEN-LAST:event_jbtnPHPActionPerformed
 
     private void jbtnFlexActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnFlexActionPerformed
         // TODO add your handling code here:
         cargarJFLEX(this);
     }//GEN-LAST:event_jbtnFlexActionPerformed
+
+    private void jbtnGoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnGoActionPerformed
+        try {
+            // TODO add your handling code here:
+            archivoSalida(this);
+        } catch (IOException ex) {
+            Logger.getLogger(miniPHP.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jbtnGoActionPerformed
 
     /**
      * @param args the command line arguments
