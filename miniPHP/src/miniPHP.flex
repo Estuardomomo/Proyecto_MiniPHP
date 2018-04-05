@@ -27,6 +27,7 @@ class Yytoken {
 %line
 %column
 %ignorecase
+//Abecedario
 a = [aA]
 b = [bB]
 c = [cC]
@@ -53,6 +54,7 @@ w = [wW]
 x = [xX]
 y = [yY]
 z = [zZ]
+//Palabras reservadas & constantes en tiempo de compilación
 __halt_compiler= ("__halt_compiler")
 break = ("break")
 clone = ("clone")
@@ -128,9 +130,29 @@ __FILE__ = ("__FILE__")
 __FUNCTION__ = ("__FUNCTION__")
 __LINE__ = ("__LINE__")
 __METHOD__ = ("__METHOD__")
+etiqueta = ("<?php" | "?>")
+//Tipos
+decimal = [1-9][0-9]* | 0
+hexadecimal = 0[xX][0-9a-fA-F]+
+octal = 0[0-7]+
+binary = 0[bB][01]+
+integer = [+-]?decimal| [+-]?hexadecimal| [+-]?octal| [+-]?binary
+LNUM = [0-9]+
+DNUM = ([0-9]*[\.]{LNUM}) | ({LNUM}[\.][0-9]*)
+EXPONENT_DNUM = [+-]?(({LNUM} | {DNUM}) [eE][+-]? {LNUM})
+double = {LNUM}|{DNUM}|{EXPONENT_DNUM}
+boolean = {t}{r}{u}{e}|{f}{a}{l}{s}{e}
+string = '[^']'|\" [^\"]\"
+//Operadores lógicos
+And = {a}{n}{d}|"&&"
+Or = {o}{r}|"||"
+Xor = {x}{o}{r}
+Not = "!"
+TipoDato = {integer}|{double}|{boolean}|{string}
 ConstanteCompilacion = {__CLASS__}|{__DIR__}|{__FILE__}|{__FUNCTION__}|{__LINE__}|{__METHOD__}|{__NAMESPACE__}|{__TRAIT__}
 PalabrasReservadas = {abstract}|{and}|{array}|{as}|{break}|{callable}|{case}|{catch}|{class}|{clone}|{const}|{continue}|{declare}|{default}|{die}|{do}|{echo}|{else}|{elseif}|{empty}|{enddeclare}|{endfor}|{endforeach}|{endif}|{endswitch}|{endwhile}|{eval}|{exit}|{extends}|{final}|{finally}|{for}|{foreach}|{function}|{global}|{goto}|{__halt_compiler}|{if}|{implements}|{include}|{include_once}|{instanceof}|{insteadof}|{interface}|{isset}|{list}|{namespace}|{new}|{or}|{print}|{private}|{protected}|{public}|{require}|{require_once}|{return}|{static}|{switch}|{throw}|{trait}|{try}|{unset}|{use}|{var}|{while}|{xor}|{yield}
 %%
 {PalabrasReservadas} { System.out.println ("Se leyo una palabra reservada");}
 {ConstanteCompilacion} { System.out.println ("Se leyo una constante en tiempo de compilacion");}
+{etiqueta} {System.out.println("Se leyo una etiqueta de php")}
 
