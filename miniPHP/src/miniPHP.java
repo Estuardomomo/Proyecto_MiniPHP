@@ -68,12 +68,13 @@ public class miniPHP extends javax.swing.JFrame {
         File salida = new File(Ruta + "out");
         RandomAccessFile raf = new RandomAccessFile(salida,"rw");
         bandera = Boolean.parseBoolean(objYylex.Cola.poll().toString());
+        int contador = objYylex.Cola.size();
         if(bandera){
-            for (int i = 0; i < objYylex.Cola.size(); i++) {
-                raf.writeBytes(objYylex.Cola.poll().toString());
+            for (int i = 0; i < contador; i++) {
+               raf.writeBytes(objYylex.Cola.poll().toString());
             }
         }else{
-            raf.writeBytes("Se encontró un error en la linea" + objYylex.Cola.poll().toString());
+            raf.writeBytes("Se encontró un error en la linea " + objYylex.Cola.poll().toString());
         }
         raf.close();
     }

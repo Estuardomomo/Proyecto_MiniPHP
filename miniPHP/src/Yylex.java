@@ -39,11 +39,11 @@ class Yylex {
   /** This character denotes the end of file */
   public static final int YYEOF = -1;
 
-  //Cola para escribir el archivo .out
-  LinkedList Cola;
   /** initial size of the lookahead buffer */
   private static final int ZZ_BUFFERSIZE = 16384;
 
+  LinkedList Cola;
+  
   /** lexical states */
   public static final int YYINITIAL = 0;
 
@@ -61,17 +61,19 @@ class Yylex {
    * Translates characters to character classes
    */
   private static final String ZZ_CMAP_PACKED = 
-    "\12\0\1\45\1\64\1\64\1\63\22\0\1\67\1\52\1\47\1\62"+
-    "\1\66\1\0\1\50\1\44\1\57\1\57\1\55\1\53\1\57\1\42"+
-    "\1\43\1\54\1\41\1\41\6\41\2\41\1\0\1\57\1\36\1\56"+
-    "\1\40\1\37\1\0\1\1\1\2\1\3\1\4\1\5\1\6\1\7"+
-    "\1\10\1\11\1\12\1\13\1\14\1\15\1\16\1\17\1\20\1\21"+
-    "\1\22\1\23\1\24\1\25\1\26\1\27\1\30\1\31\1\12\1\60"+
-    "\1\46\1\61\1\0\1\32\1\0\1\1\1\2\1\3\1\4\1\5"+
-    "\1\6\1\7\1\10\1\11\1\12\1\13\1\14\1\15\1\16\1\17"+
-    "\1\20\1\21\1\22\1\23\1\24\1\25\1\26\1\27\1\30\1\31"+
-    "\1\12\1\57\1\51\1\57\1\0\6\12\1\65\172\12\60\0\2\33"+
-    "\115\0\1\35\u1ea8\0\1\64\1\64\u0100\0\1\34\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\udee5\0";
+    "\11\0\1\67\1\45\1\64\1\64\1\63\22\0\1\67\1\52\1\47"+
+    "\1\62\1\66\1\0\1\50\1\44\1\57\1\57\1\55\1\53\1\57"+
+    "\1\42\1\43\1\54\1\41\1\41\6\41\2\41\1\0\1\57\1\36"+
+    "\1\56\1\40\1\37\1\0\1\1\1\2\1\3\1\4\1\5\1\6"+
+    "\1\7\1\10\1\11\1\12\1\13\1\14\1\15\1\16\1\17\1\20"+
+    "\1\21\1\22\1\23\1\24\1\25\1\26\1\27\1\30\1\31\1\12"+
+    "\1\60\1\46\1\61\1\0\1\32\1\0\1\1\1\2\1\3\1\4"+
+    "\1\5\1\6\1\7\1\10\1\11\1\12\1\13\1\14\1\15\1\16"+
+    "\1\17\1\20\1\21\1\22\1\23\1\24\1\25\1\26\1\27\1\30"+
+    "\1\31\1\12\1\57\1\51\1\57\1\0\6\12\1\65\32\12\1\12"+
+    "\137\12\60\0\2\33\115\0\1\35\u1500\0\1\67\u097f\0\13\67\35\0"+
+    "\1\64\1\64\5\0\1\67\57\0\1\67\312\0\1\34\u0ed5\0\1\67"+
+    "\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\ud00f\0";
 
   /** 
    * Translates characters to character classes
@@ -237,7 +239,7 @@ class Yylex {
     "\1\27\1\30\1\31\1\0\1\32\1\33\1\34\1\35"+
     "\1\36\1\37\1\40\1\41\1\42\1\43\1\44\1\45"+
     "\1\46\1\47\1\50\1\51\1\52\1\47\3\43\1\53"+
-    "\1\54\1\0\1\13\1\55\1\42\1\0\1\13\1\56"+
+    "\1\54\1\42\1\13\1\55\1\42\1\0\1\13\1\56"+
     "\13\13\1\57\3\13\1\60\1\61\7\13\2\0\1\62"+
     "\3\0\1\13\23\0\1\13\3\0\10\13\1\63\10\13"+
     "\1\64\10\13\1\65\5\0\1\13\23\0\1\13\3\0"+
@@ -803,7 +805,7 @@ class Yylex {
     char [] map = new char[0x110000];
     int i = 0;  /* index in packed string  */
     int j = 0;  /* index in unpacked array */
-    while (i < 248) {
+    while (i < 274) {
       int  count = packed.charAt(i++);
       char value = packed.charAt(i++);
       do map[j++] = value; while (--count > 0);
@@ -1152,8 +1154,7 @@ class Yylex {
         return null;
       }
       else {
-        try{
-            switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
+        switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1: 
             { Cola.add(yytext());
     System.out.println("Se leyo una constante"+ yyline);
@@ -1215,12 +1216,10 @@ class Yylex {
             }
           case 24: break;
           default:
+              Cola.clear();
+              Cola.add("false");
+              Cola.add(Integer.toString(yyline));
             zzScanError(ZZ_NO_MATCH);
-        }
-        }catch(NumberFormatException ex){
-            Cola.clear();
-            Cola.add("false");
-            Cola.add(yyline);
         }
       }
     }
