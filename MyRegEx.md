@@ -335,3 +335,4 @@ Identificador = [a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*
 **salto de linea**  
 EXP_ESPACIO = \n|\r\n|" "|\r|\t|\s  
 **Error especial**  
+ErrorEspecial =  "$"{LNUM}{Variables}|"$"{LNUM}{Constante}|"=!="|"1a"|(("/*")~(\n))
