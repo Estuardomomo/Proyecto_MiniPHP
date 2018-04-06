@@ -166,7 +166,7 @@ DNUM = ([0-9]*[\.]{LNUM}) | ({LNUM}[\.][0-9]*)
 EXPONENT_DNUM = [+-]?(({LNUM} | {DNUM}) [eE][+-]? {LNUM})
 double = {LNUM}|{DNUM}|{EXPONENT_DNUM}
 boolean = {t}{r}{u}{e}|{f}{a}{l}{s}{e}
-string = '([^'\n]|\\')*'|\"([^\"\n]|\\\")*\"
+string = ('([^'\n\\]|\\.)*')|(\"([^\"\n\\]|\\.)*\")
 //Operadores
 And = {a}{n}{d}|"&&"
 Or = {o}{r}|"||"
@@ -178,15 +178,17 @@ operadoresComparativo = "=="|"==="|"!="|"<>"|"!=="|"<"|">"|"<="|">="|"<=>"|"??"
 operadoresAsignacion = "="|"+="|"-="|"*="|"/="|"++"|"--" 
 //Caracteres
 Punto = "."
+DosPuntos = ":"
 Coma = ","
 PuntoyComa =";"
 Parentesis = "("|")"
 Llaves = "{"|"}"
 Corchetes = "["|"]"
-BarraInvertida = \
+Barra = "|"
+Pregunta = "?"
 //Comentarios
 ComentarioSimple = ("//"|"#")(.)*
-ComentarioMultiple = "/*"([^*/])*"*/"
+ComentarioMultiple = "/*"~"*/"
 //Variables predeterminadas
 Predeterminado = "$"(GLOBALS|_(SERVER|GET|POST|FILES|COOKIE|SESSION|REQUEST|ENV))
 MasPredeterminado = "$"(php_errormsg|HTTP_RAW_POST_DATA|http_response_header|argc|argv|args)
@@ -197,7 +199,7 @@ Comentario = {ComentarioSimple}|{ComentarioMultiple}
 TipoDato = {integer}|{double}|{boolean}|{string}
 ConstanteCompilacion = {__CLASS__}|{__DIR__}|{__FILE__}|{__FUNCTION__}|{__LINE__}|{__METHOD__}|{__NAMESPACE__}|{__TRAIT__}
 PalabrasReservadas = {abstract}|{and}|{array}|{as}|{break}|{callable}|{case}|{catch}|{class}|{clone}|{const}|{continue}|{declare}|{default}|{die}|{do}|{echo}|{else}|{elseif}|{empty}|{enddeclare}|{endfor}|{endforeach}|{endif}|{endswitch}|{endwhile}|{eval}|{exit}|{extends}|{final}|{finally}|{for}|{foreach}|{function}|{global}|{goto}|{__halt_compiler}|{if}|{implements}|{include}|{include_once}|{instanceof}|{insteadof}|{interface}|{isset}|{list}|{namespace}|{new}|{or}|{print}|{private}|{protected}|{public}|{require}|{require_once}|{return}|{static}|{switch}|{throw}|{trait}|{try}|{unset}|{use}|{var}|{while}|{xor}|{yield}
-Caracter = {Punto}|{Coma}|{PuntoyComa}|{Parentesis}|{Llaves}|{Corchetes}|{BarraInvertida}
+Caracter = {Punto}|{Coma}|{PuntoyComa}|{Parentesis}|{Llaves}|{Corchetes}|{Barra}|{DosPuntos}|{Pregunta}
 //Acceso a base de datos
 AccesoBD = "$"recordset"["{string}"]"
 //Estructuras de control
@@ -210,53 +212,30 @@ Constante = {Identificador}
 Identificador = [a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*
 //salto de linea
 EXP_ESPACIO = \n|\r\n|" "|\r|\t|\s
+//Error especial
+ErrorEspecial = {LNUM}{Variables}|{LNUM}{Constante}
 %%
-{PalabrasReservadas} {
-    try{raf.writeBytes(yytext());} catch(IOException ex){}
-    System.out.println ("Se leyo una palabra reservada "+ yyline);}
-{ConstanteCompilacion} { 
-    try{raf.writeBytes(yytext());} catch(IOException ex){} 
-    System.out.println ("Se leyo una constante en tiempo de compilacion "+ yyline);}
-{etiqueta} {
-    try{raf.writeBytes(yytext());} catch(IOException ex){} 
-    System.out.println("Se leyo una etiqueta de php "+ yyline);}
-{variablesPredeterminadas} {
-    try{raf.writeBytes(yytext());} catch(IOException ex){} 
-    System.out.println("Se leyo una variable predeterminada "+ yyline);}
-{Operador} {
-    try{raf.writeBytes(yytext());} catch(IOException ex){} 
-    System.out.println("Se leyo un Operador "+ yyline);}
-{Comentario} {
-    try{raf.writeBytes(yytext());} catch(IOException ex){} 
-    System.out.println("Se leyo un comentario "+ yyline);}
-{TipoDato} {
-    try{raf.writeBytes(yytext());} catch(IOException ex){} 
-    System.out.println("Se leyo un tipo de dato "+ yyline);}
-{Control} {
-    try{raf.writeBytes(yytext());} catch(IOException ex){} 
-    System.out.println("Se leyo una estructura de control "+ yyline);}
-{Caracter} {
-    try{raf.writeBytes(yytext());} catch(IOException ex){} 
-    System.out.println("Se leyo un caracter "+ yyline);}
-{AccesoBD} {
-    try{raf.writeBytes(yytext());} catch(IOException ex){} 
-    System.out.println("Se leyo un acceso a base de datos "+ yyline);}
-{Variables} {
-    try{raf.writeBytes(yytext());} catch(IOException ex){} 
-    System.out.println("Se leyo una variable "+ yyline);}
-{Constante} {
-    try{raf.writeBytes(yytext());} catch(IOException ex){} 
-    System.out.println("Se leyo una constante "+ yyline);}
-{Identificador} {
-    try{raf.writeBytes(yytext());} catch(IOException ex){} 
-    System.out.println("Se leyo un identificador "+ yyline);}
-{EXP_ESPACIO} {
-    try{raf.writeBytes(yytext());} catch(IOException ex){} 
-    System.out.println("Se leyo un espacio "+ yyline);}
+{PalabrasReservadas} {try{raf.writeBytes(yytext());} catch(IOException ex){}}
+{ConstanteCompilacion} { try{raf.writeBytes(yytext());} catch(IOException ex){} }
+{etiqueta} { try{raf.writeBytes(yytext());} catch(IOException ex){}}
+{variablesPredeterminadas} {try{raf.writeBytes(yytext());} catch(IOException ex){} }
+{Operador} {try{raf.writeBytes(yytext());} catch(IOException ex){}}
+{Comentario} {try{raf.writeBytes(yytext());} catch(IOException ex){}}
+{TipoDato} {try{raf.writeBytes(yytext());} catch(IOException ex){} }
+{Control} { try{raf.writeBytes(yytext());} catch(IOException ex){} }
+{Caracter} { try{raf.writeBytes(yytext());} catch(IOException ex){}}
+{AccesoBD} {try{raf.writeBytes(yytext());} catch(IOException ex){} }
+{Variables} {try{raf.writeBytes(yytext());} catch(IOException ex){}}
+{Constante} { try{raf.writeBytes(yytext());} catch(IOException ex){}}
+{Identificador} { try{raf.writeBytes(yytext());} catch(IOException ex){} }
+{EXP_ESPACIO} {try{raf.writeBytes(yytext());} catch(IOException ex){}}
+{ErrorEspecial} {
+    bandera = false;
+    try{rafi.writeBytes("se encontro un error en la linea: "+ Integer.toString(yyline) + " Expresion: " + yytext() + " \n");}catch(IOException ex){}
+}
     //ERRORES
 . {
     bandera = false;
-    try{rafi.writeBytes("Se encontro un error en la linea: "+ Integer.toString(yyline));} catch(IOException ex){}
-    System.out.println("Se leyo un error "+ yyline);
+    try{rafi.writeBytes("Se encontro un error en la linea: "+ Integer.toString(yyline) + " Expresion: " + yytext() + " \n");} catch(IOException ex){}
 }
 

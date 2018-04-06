@@ -5,10 +5,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /*
@@ -58,8 +58,16 @@ public class miniPHP extends javax.swing.JFrame {
                  selectedFile = new File(ruta+"err");
              }else{
                  selectedFile = new File(ruta+"out");
+                 FileReader reader = new FileReader(ruta + "err");
+                 BufferedReader buffer = new BufferedReader(reader);
+                 String line = buffer.readLine();
+                 while(line != null){
+                     tbConsole.append(line);
+                     line = buffer.readLine();
+                 }
              }
              selectedFile.delete();
+             JOptionPane.showMessageDialog(null, "Se creó el archivo exitosamente.","Notificación",JOptionPane.OK_OPTION);
          }catch(NumberFormatException e){}
      }
     }
@@ -87,20 +95,38 @@ public class miniPHP extends javax.swing.JFrame {
 
         jbtnFlex = new javax.swing.JButton();
         jbtnPHP = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tbConsole = new javax.swing.JTextArea();
+        jLabel1 = new javax.swing.JLabel();
+        btnClean = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jbtnFlex.setText("jFlex");
+        jbtnFlex.setIcon(new javax.swing.ImageIcon(getClass().getResource("/load32.png"))); // NOI18N
         jbtnFlex.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jbtnFlexActionPerformed(evt);
             }
         });
 
-        jbtnPHP.setText("php");
+        jbtnPHP.setIcon(new javax.swing.ImageIcon(getClass().getResource("/php.png"))); // NOI18N
         jbtnPHP.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jbtnPHPActionPerformed(evt);
+            }
+        });
+
+        tbConsole.setColumns(20);
+        tbConsole.setRows(5);
+        jScrollPane1.setViewportView(tbConsole);
+
+        jLabel1.setFont(new java.awt.Font("Bookman Old Style", 3, 48)); // NOI18N
+        jLabel1.setText("miniPHP");
+
+        btnClean.setIcon(new javax.swing.ImageIcon(getClass().getResource("/console.png"))); // NOI18N
+        btnClean.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCleanActionPerformed(evt);
             }
         });
 
@@ -108,21 +134,35 @@ public class miniPHP extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(22, 22, 22)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(28, 28, 28)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jbtnPHP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnClean, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jbtnFlex, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jbtnPHP, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jbtnFlex))
-                .addContainerGap(288, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 269, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addComponent(jbtnFlex)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jbtnPHP, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(98, Short.MAX_VALUE))
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jbtnFlex, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jbtnPHP, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnClean, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
 
         pack();
@@ -141,6 +181,11 @@ public class miniPHP extends javax.swing.JFrame {
         // TODO add your handling code here:
         cargarJFLEX(this);
     }//GEN-LAST:event_jbtnFlexActionPerformed
+
+    private void btnCleanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCleanActionPerformed
+        // TODO add your handling code here:
+        tbConsole.setText("");
+    }//GEN-LAST:event_btnCleanActionPerformed
 
     /**
      * @param args the command line arguments
@@ -178,7 +223,11 @@ public class miniPHP extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnClean;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton jbtnFlex;
     private javax.swing.JButton jbtnPHP;
+    private javax.swing.JTextArea tbConsole;
     // End of variables declaration//GEN-END:variables
 }
