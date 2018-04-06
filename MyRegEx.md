@@ -27,8 +27,8 @@ v = [vV]
 w = [wW]  
 x = [xX]  
 y = [yY]  
-z = [zZ]
-Palabras reservadas & constantes en tiempo de compilaciÛn
+z = [zZ]  
+Palabras reservadas & constantes en tiempo de compilaci√≥n
 ---
 __halt_compiler= ("__halt_compiler")  
 break = ("break")  
@@ -105,7 +105,7 @@ __FILE__ = ("__FILE__")
 __FUNCTION__ = ("__FUNCTION__")  
 __LINE__ = ("__LINE__")  
 __METHOD__ = ("__METHOD__")  
-etiqueta = ("<?php" | "?>")
+etiqueta = ("<?php" | "?>")  
 Tipos
 ---
 decimal = [1-9][0-9]* | 0  
@@ -128,7 +128,7 @@ Not = "!"
 operadoreslogicos = {And}|{Or}|{Xor}|{Not}  
 operadoresAritmeticos = "+"|"-"|"/"|"*"|"**"  
 operadoresComparativo = "=="|"==="|"!="|"<>"|"!=="|"<"|">"|"<="|">="|"<=>"|"??"  
-operadoresAsignacion = "="|"+="|"-="|"*="|"/="|"++"|"--"
+operadoresAsignacion = "="|"+="|"-="|"*="|"/="|"++"|"--"  
 Caracteres
 ---
 Punto = "."  
@@ -139,16 +139,16 @@ Parentesis = "("|")"
 Llaves = "{"|"}"  
 Corchetes = "["|"]"  
 Barra = "|"  
-Pregunta = "?"
+Pregunta = "?"  
 Comentarios
 ---
 ComentarioSimple = ("//"|"#")(.)*  
-ComentarioMultiple = "/*"~"*/"
+ComentarioMultiple = "/*"~"*/"  
 Variables predeterminadas
 ---
 Predeterminado = "$"(GLOBALS|_(SERVER|GET|POST|FILES|COOKIE|SESSION|REQUEST|ENV))  
-MasPredeterminado = "$"(php_errormsg|HTTP_RAW_POST_DATA|http_response_header|argc|argv|args)
-Entidades que devolver·n un texto
+MasPredeterminado = "$"(php_errormsg|HTTP_RAW_POST_DATA|http_response_header|argc|argv|args)  
+Entidades que devolver√°n un texto
 ---
 variablesPredeterminadas = {Predeterminado}|{MasPredeterminado}  
 Operador = {operadoreslogicos}|{operadoresAritmeticos}|{operadoresComparativo}|{operadoresAsignacion}  
@@ -156,10 +156,10 @@ Comentario = {ComentarioSimple}|{ComentarioMultiple}
 TipoDato = {integer}|{double}|{boolean}|{string}  
 ConstanteCompilacion = {__CLASS__}|{__DIR__}|{__FILE__}|{__FUNCTION__}|{__LINE__}|{__METHOD__}|{__NAMESPACE__}|{__TRAIT__}  
 PalabrasReservadas = {abstract}|{and}|{array}|{as}|{break}|{callable}|{case}|{catch}|{class}|{clone}|{const}|{continue}|{declare}|{default}|{die}|{do}|{echo}|{else}|{elseif}|{empty}|{enddeclare}|{endfor}|{endforeach}|{endif}|{endswitch}|{endwhile}|{eval}|{exit}|{extends}|{final}|{finally}|{for}|{foreach}|{function}|{global}|{goto}|{__halt_compiler}|{if}|{implements}|{include}|{include_once}|{instanceof}|{insteadof}|{interface}|{isset}|{list}|{namespace}|{new}|{or}|{print}|{private}|{protected}|{public}|{require}|{require_once}|{return}|{static}|{switch}|{throw}|{trait}|{try}|{unset}|{use}|{var}|{while}|{xor}|{yield}  
-Caracter = {Punto}|{Coma}|{PuntoyComa}|{Parentesis}|{Llaves}|{Corchetes}|{Barra}|{DosPuntos}|{Pregunta}
-**Acceso a base de datos**
-AccesoBD = "$"recordset"["{string}"]"  
-**Estructuras de control**
+Caracter = {Punto}|{Coma}|{PuntoyComa}|{Parentesis}|{Llaves}|{Corchetes}|{Barra}|{DosPuntos}|{Pregunta}  
+**Acceso a base de datos**  
+AccesoBD = "$"recordset"["{string}"]"    
+**Estructuras de control**  
 Control = ({if}|{else}|{elseif}|{endif}|{while}|{do}|{for}|{foreach}|{break}|{switch}|{case}|{continue}|{return}|{include})  
 **Variables**  
 Variables = "$"{Identificador}  
