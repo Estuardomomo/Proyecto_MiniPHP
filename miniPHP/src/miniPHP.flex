@@ -166,7 +166,7 @@ DNUM = ([0-9]*[\.]{LNUM}) | ({LNUM}[\.][0-9]*)
 EXPONENT_DNUM = [+-]?(({LNUM} | {DNUM}) [eE][+-]? {LNUM})
 double = {LNUM}|{DNUM}|{EXPONENT_DNUM}
 boolean = {t}{r}{u}{e}|{f}{a}{l}{s}{e}
-string = ('([^'\n\\]|\\.)*')|(\"([^\"\n\\]|\\.)*\")
+string = ('([^'\\]|\\.)*')|(\"([^\"\\]|\\.)*\")|"/*"~"*/"
 //Operadores
 And = {a}{n}{d}|"&&"
 Or = {o}{r}|"||"
@@ -196,7 +196,7 @@ MasPredeterminado = "$"(php_errormsg|HTTP_RAW_POST_DATA|http_response_header|arg
 variablesPredeterminadas = {Predeterminado}|{MasPredeterminado}
 Operador = {operadoreslogicos}|{operadoresAritmeticos}|{operadoresComparativo}|{operadoresAsignacion}
 Comentario = {ComentarioSimple}|{ComentarioMultiple}
-TipoDato = {integer}|{double}|{boolean}|{string}
+TipoDato = {integer}|{double}|{boolean}
 ConstanteCompilacion = {__CLASS__}|{__DIR__}|{__FILE__}|{__FUNCTION__}|{__LINE__}|{__METHOD__}|{__NAMESPACE__}|{__TRAIT__}
 PalabrasReservadas = {abstract}|{and}|{array}|{as}|{break}|{callable}|{case}|{catch}|{class}|{clone}|{const}|{continue}|{declare}|{default}|{die}|{do}|{echo}|{else}|{elseif}|{empty}|{enddeclare}|{endfor}|{endforeach}|{endif}|{endswitch}|{endwhile}|{eval}|{exit}|{extends}|{final}|{finally}|{for}|{foreach}|{function}|{global}|{goto}|{__halt_compiler}|{if}|{implements}|{include}|{include_once}|{instanceof}|{insteadof}|{interface}|{isset}|{list}|{namespace}|{new}|{or}|{print}|{private}|{protected}|{public}|{require}|{require_once}|{return}|{static}|{switch}|{throw}|{trait}|{try}|{unset}|{use}|{var}|{while}|{xor}|{yield}
 Caracter = {Punto}|{Coma}|{PuntoyComa}|{Parentesis}|{Llaves}|{Corchetes}|{Barra}|{DosPuntos}|{Pregunta}
@@ -213,18 +213,23 @@ Identificador = [a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*
 //salto de linea
 EXP_ESPACIO = \n|\r\n|" "|\r|\t|\s
 //Error especial
-ErrorEspecial = {LNUM}{Variables}|{LNUM}{Constante}
+ErrorEspecial =  "$"{LNUM}{Variables}|"$"{LNUM}{Constante}|"=!="|"1a"|(("/*")~(\n))
 %%
-{PalabrasReservadas} {try{raf.writeBytes(yytext());} catch(IOException ex){}}
-{ConstanteCompilacion} { try{raf.writeBytes(yytext());} catch(IOException ex){} }
-{etiqueta} { try{raf.writeBytes(yytext());} catch(IOException ex){}}
+{string} {try{raf.writeBytes(yytext());} catch(IOException ex){}}
+{PalabrasReservadas} {try{raf.writeBytes(yytext().toLowerCase());} catch(IOException ex){}}
+{ConstanteCompilacion} { try{raf.writeBytes(yytext().toUpperCase());} catch(IOException ex){} }
+{etiqueta} { try{raf.writeBytes(yytext().toLowerCase());} catch(IOException ex){}}
 {variablesPredeterminadas} {try{raf.writeBytes(yytext());} catch(IOException ex){} }
-{Operador} {try{raf.writeBytes(yytext());} catch(IOException ex){}}
+{Operador} {try{raf.writeBytes(yytext().toLowerCase());} catch(IOException ex){}}
 {Comentario} {try{raf.writeBytes(yytext());} catch(IOException ex){}}
-{TipoDato} {try{raf.writeBytes(yytext());} catch(IOException ex){} }
-{Control} { try{raf.writeBytes(yytext());} catch(IOException ex){} }
+{TipoDato} {try{raf.writeBytes(yytext().toLowerCase());} catch(IOException ex){} }
+{Control} { try{raf.writeBytes(yytext().toLowerCase());} catch(IOException ex){} }
 {Caracter} { try{raf.writeBytes(yytext());} catch(IOException ex){}}
-{AccesoBD} {try{raf.writeBytes(yytext());} catch(IOException ex){} }
+{AccesoBD} {
+    try{
+        
+        raf.writeBytes(yytext());
+        } catch(IOException ex){} }
 {Variables} {try{raf.writeBytes(yytext());} catch(IOException ex){}}
 {Constante} { try{raf.writeBytes(yytext());} catch(IOException ex){}}
 {Identificador} { try{raf.writeBytes(yytext());} catch(IOException ex){} }
